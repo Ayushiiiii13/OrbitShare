@@ -1,0 +1,89 @@
+
+
+CREATE DATABASE IF NOT EXISTS neural_breach;
+USE neural_breach;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    college VARCHAR(150) NOT NULL,
+    branch VARCHAR(100) NOT NULL,
+    semester INT NOT NULL,
+    profile_picture TEXT,
+    bio TEXT,
+    role ENUM('student','admin') DEFAULT 'student',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE resources (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    title VARCHAR(200) NOT NULL,
+    subject VARCHAR(150) NOT NULL,
+    semester INT NOT NULL,
+    resource_type VARCHAR(100) NOT NULL,
+    year_batch VARCHAR(50) NOT NULL,
+    description TEXT,
+    privacy_level ENUM('public','private') NOT NULL,
+    file_path TEXT NOT NULL,
+    download_count INT DEFAULT 0,
+    avg_rating FLOAT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tags (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE resource_tags (
+    resource_id INT,
+    tag_id INT,
+    PRIMARY KEY (resource_id, tag_id),
+    FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+CREATE TABLE reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    resource_id INT,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, resource_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE resource_likes (
+    user_id INT,
+    resource_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, resource_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    resource_id INT,
+    reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE
+);
+
+
+CREATE INDEX idx_subject ON resources(subject);
+CREATE INDEX idx_semester ON resources(semester);
+CREATE INDEX idx_type ON resources(resource_type);
+CREATE INDEX idx_privacy ON resources(privacy_level);
+
