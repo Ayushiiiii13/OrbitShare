@@ -1,18 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Layout from "../components/Layout";
-import { Button } from "../components/Button";
-import { Input } from "../components/Input";
-import { Label } from "../components/Label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/Card";
+import { motion } from "framer-motion";
+import { Orb } from "../components/Orb";
+import Navbar from "../components/Navbar";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -23,113 +14,184 @@ export default function Register() {
     branch: "",
     semester: "",
   });
-  const { login } = useAuth();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register Data:", form);
-    // Mock Registration -> Login
-    login({ email: form.email, name: form.name });
-    navigate("/dashboard");
+    setError("");
+    setIsLoading(true);
+
+    const result = await register(form);
+
+    setIsLoading(false);
+    if (result.success) {
+      alert("Registration successful! Please sign in.");
+      navigate("/login");
+    } else {
+      setError(result.message);
+    }
   };
 
   return (
-    <Layout>
-      <div className="flex items-center justify-center min-h-[80vh] py-10">
-        <Card className="w-full max-w-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
-            <CardDescription className="text-center">
-              Enter your information to get started with Resource Hub
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground flex flex-col">
+      {/* Background Orbs */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Orb color="bg-red-500/30" size="w-[300px] h-[300px]" className="top-[10%] left-[5%]" delay={0} />
+        <Orb color="bg-blue-500/40" size="w-[500px] h-[500px]" className="top-[15%] right-[10%]" delay={1.5} />
+        <Orb color="bg-primary/30" size="w-[400px] h-[400px]" className="bottom-[20%] left-[15%]" delay={3} />
+        <Orb color="bg-accent/20" size="w-[350px] h-[350px]" className="bottom-[10%] right-[5%]" delay={4.5} />
+      </div>
+
+      {/* Navbar */}
+      <Navbar />
+
+      {/* Register Form Container */}
+      <div className="flex-1 flex items-center justify-center relative z-10 px-4 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-2xl"
+        >
+          <div className="glass-panel rounded-2xl p-8 space-y-6">
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <h1 className="text-3xl font-bold text-white uppercase tracking-tight">Create Identity</h1>
+              <p className="text-secondary text-sm">Join the academic collective across the universe</p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="John Doe"
-                  onChange={handleChange}
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                    Full Name
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="John Doe"
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                    University Email
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@university.edu"
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
+                <label htmlFor="password" className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                  Access Key (Password)
+                </label>
+                <input
                   id="password"
                   name="password"
                   type="password"
+                  placeholder="Create a strong password"
                   onChange={handleChange}
                   required
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="college">College Name</Label>
-                <Input
+                <label htmlFor="college" className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                  Educational Institution
+                </label>
+                <input
                   id="college"
                   name="college"
+                  type="text"
                   placeholder="University of Technology"
                   onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="branch">Branch</Label>
-                  <Input
+                  <label htmlFor="branch" className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                    Branch / Dept
+                  </label>
+                  <input
                     id="branch"
                     name="branch"
+                    type="text"
                     placeholder="CSE"
                     onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="semester">Semester</Label>
-                  <Input
+                  <label htmlFor="semester" className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                    Current Semester
+                  </label>
+                  <input
                     id="semester"
                     name="semester"
+                    type="text"
                     placeholder="6th"
                     onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
                   />
                 </div>
               </div>
 
-              <Button type="submit" className="w-full mt-4">
-                Create Account
-              </Button>
+              <motion.button
+                type="submit"
+                disabled={isLoading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 flex items-center justify-center gap-2 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Synthesizing..." : "Initiate Registration"}
+                {!isLoading && <span className="text-lg">→</span>}
+              </motion.button>
             </form>
-          </CardContent>
-          <CardFooter className="justify-center">
-            <p className="text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link to="/" className="text-primary hover:underline">
-                Login
+
+            {/* Footer */}
+            <div className="text-center text-xs text-gray-500">
+              Already a member?{" "}
+              <Link to="/login" className="text-secondary hover:text-primary transition-colors font-bold uppercase tracking-wider ml-1">
+                Authorize Access
               </Link>
-            </p>
-          </CardFooter>
-        </Card>
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </Layout>
+    </div>
   );
 }

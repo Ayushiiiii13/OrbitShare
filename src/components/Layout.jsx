@@ -1,22 +1,26 @@
 import Navbar from "./Navbar";
+import ParticlesBackground from "./ParticlesBackground";
+import { Orb } from "./Orb";
 
 export default function Layout({ children }) {
     return (
         <div className="relative min-h-screen overflow-hidden bg-background text-foreground font-sans antialiased selection:bg-primary/30">
-            {/* Background Decorative Blobs */}
-            <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-            <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+            {/* Background Layer */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <ParticlesBackground />
 
-            <Navbar />
+                {/* Glowing Orbs */}
+                <Orb color="bg-primary/30" size="w-[500px] h-[500px]" className="-top-20 -left-20" delay={0} />
+                <Orb color="bg-secondary/20" size="w-[400px] h-[400px]" className="top-[20%] right-[10%]" delay={2} />
+                <Orb color="bg-accent/20" size="w-[600px] h-[600px]" className="-bottom-32 -right-20" delay={4} />
+            </div>
 
-            <main className="relative container mx-auto px-4 py-8 max-w-7xl animate-accordion-down z-10">
-                {children}
-            </main>
-
-            <footer className="relative border-t border-white/10 py-6 text-center text-sm text-muted-foreground z-10 bg-background/50 backdrop-blur-md">
-                © {new Date().getFullYear()} Resource Hub. All rights reserved.
-            </footer>
+            <div className="relative z-10 flex flex-col min-h-screen">
+                <Navbar />
+                <main className="flex-1 container mx-auto px-4 py-8">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

@@ -34,8 +34,8 @@
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
-  --animate-blob: blob 10s infinite;
   --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes accordion-down {
     from {
@@ -57,31 +57,13 @@
     }
   }
 
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-  }
-
   @keyframes float {
     0% {
       transform: translateY(0px);
     }
 
     50% {
-      transform: translateY(-10px);
+      transform: translateY(-20px);
     }
 
     100% {
@@ -92,38 +74,36 @@
 
 @layer base {
   :root {
-    /* Midnight Particle Theme */
-    --background: 224 71% 4%;
-    /* #020617 Very dark blue/slate */
+    /* OrbitShare Theme */
+    --background: 240 30% 6%; /* Deep Space */
     --foreground: 210 40% 98%;
 
-    --card: 224 71% 4%;
+    --card: 240 30% 8%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 224 71% 4%;
+    --popover: 240 30% 6%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
-    /* Electric Blue */
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 250 100% 70%; /* Orbit Violet */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 190 100% 50%; /* Cyan Neon */
+    --secondary-foreground: 240 30% 6%;
 
     --muted: 215 27.9% 16.9%;
     --muted-foreground: 217.9 10.6% 64.9%;
 
-    --accent: 215 27.9% 16.9%;
+    --accent: 320 100% 60%; /* Magenta Neon */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 34% 17%;
+    --border: 240 30% 15%;
+    --input: 240 30% 15%;
+    --ring: 250 100% 70%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   * {
@@ -131,17 +111,21 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30;
-    /* Deep space gradient */
-    background: radial-gradient(circle at top center, #1e1b4b 0%, #020617 100%);
-    min-height: 100vh;
+    @apply bg-background text-foreground antialiased selection:bg-secondary/30;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 50%);
   }
 }
 
-@utility glow-text {
-  text-shadow: 0 0 20px hsla(var(--primary) / 0.6), 0 0 40px hsla(var(--primary) / 0.4);
+@utility glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
 }
 
-@utility glow-box {
-  box-shadow: 0 0 20px -5px hsla(var(--primary) / 0.4), 0 0 10px -5px hsla(var(--primary) / 0.2);
+@utility text-glow {
+  text-shadow: 0 0 20px currentColor;
+}
+
+@utility orb-glow {
+  box-shadow: 0 0 80px 20px currentColor;
 }
